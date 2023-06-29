@@ -1,5 +1,29 @@
 import json
 
+# Function to load user data from the JSON file
+def load_user_data():
+    filename = "data.json"
+    try:
+        with open(filename, "r") as file:
+            json_data = file.read()
+            if json_data:
+                return json.loads(json_data)
+            else:
+                return []
+    except IOError:
+        print("An error occurred while reading the file.")
+        return []
+
+# Function to save user data to the JSON file
+def save_user_data(data):
+    filename = "data.json"
+    try:
+        with open(filename, "w") as file:
+            json_data = json.dumps(data)
+            file.write(json_data)
+    except IOError:
+        print("An error occurred while writing to the file.")
+
 # Function for user registration
 def register_user():
     print("USER REGISTRATION")
@@ -39,30 +63,6 @@ def register_user():
     save_user_data(existing_data)
     print("Registration successful!")
 
-# Function to load user data from the JSON file
-def load_user_data():
-    filename = "data.json"
-    try:
-        with open(filename, "r") as file:
-            json_data = file.read()
-            if json_data:
-                return json.loads(json_data)
-            else:
-                return []
-    except IOError:
-        print("An error occurred while reading the file.")
-        return []
-
-# Function to save user data to the JSON file
-def save_user_data(data):
-    filename = "data.json"
-    try:
-        with open(filename, "w") as file:
-            json_data = json.dumps(data)
-            file.write(json_data)
-    except IOError:
-        print("An error occurred while writing to the file.")
-
 # Function for user login
 def login_user():
     print("USER LOGIN")
@@ -72,11 +72,10 @@ def login_user():
     # Load user data
     user_data = load_user_data()
 
-    # Check if the entered username and password match
-    for user in user_data:
-        if user["name"] == user_name and user["password"] == user_password:
-            print("Login successful!")
-            return True
+    # Check if the entered username and password match for any user
+    if any(user["name"] == user_name and user["password"] == user_password for user in user_data):
+        print("Login successful!")
+        return True
 
     print("Invalid credentials.")
     return False
