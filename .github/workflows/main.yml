@@ -1,19 +1,24 @@
-name: Build and Test
+name: Continuous Integration
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
+    - name: Build and test
+      run: |
+        docker build -t my_app .
+        docker run my_app pytest
 
-      - name: Run tests
-        run: python -m unittest discover -s ./
+    - name: Push to container registry
+      run: |
+        docker tag my_app my_container_registry/my_app:${{ github.sha }}
+        docker push my_container_registry/my_app:${{ github.sha }}
